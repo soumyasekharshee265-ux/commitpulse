@@ -65,6 +65,20 @@ const Icons = {
   ),
 };
 
+function trackUser(name: string) {
+  const payload = JSON.stringify({ username: name });
+  // sendBeacon is truly fire-and-forget — it doesn't block navigation
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon('/api/track-user', new Blob([payload], { type: 'application/json' }));
+  } else {
+    fetch('/api/track-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+    }).catch(console.error);
+  }
+}
+
 export default function LandingPage() {
   const [username, setUsername] = useState('');
   const [copied, setCopied] = useState(false);
@@ -78,11 +92,7 @@ export default function LandingPage() {
   const copyToClipboard = () => {
     if (!hasUsername) return;
 
-    fetch('/api/track-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: trimmedUsername }),
-    }).catch(console.error);
+    trackUser(trimmedUsername);
 
     navigator.clipboard.writeText(markdown);
     setCopied(true);
@@ -223,11 +233,7 @@ export default function LandingPage() {
                     if (!hasUsername) {
                       e.preventDefault();
                     } else {
-                      fetch('/api/track-user', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username: trimmedUsername }),
-                      }).catch(console.error);
+                      trackUser(trimmedUsername);
                     }
                   }}
                   className={`relative flex min-w-[160px] items-center justify-center gap-2 overflow-hidden rounded-xl border px-6 py-3.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
@@ -472,13 +478,7 @@ function SuccessGuide({
           <div className="mt-8 flex justify-center border-t border-white/5 pt-6">
             <Link
               href={`/dashboard/${username}`}
-              onClick={() => {
-                fetch('/api/track-user', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ username }),
-                }).catch(console.error);
-              }}
+              onClick={() => trackUser(username)}
             >
               <button className="bg-white text-black hover:bg-zinc-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]">
                 Watch Your Dashboard
