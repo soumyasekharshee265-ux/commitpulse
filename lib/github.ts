@@ -122,7 +122,9 @@ function throwIfRateLimited(res: Response): void {
 
 type GitHubContributionResponse = {
   data?: {
-    user: { contributionsCollection: { contributionCalendar: ContributionCalendar } } | null;
+    user: {
+      contributionsCollection: { contributionCalendar: ContributionCalendar };
+    } | null;
   };
   errors?: unknown;
 };
@@ -302,12 +304,13 @@ export async function fetchUserProfile(
   options: FetchOptions = {}
 ): Promise<GitHubUserProfile> {
   const key = cacheKey('profile', username);
+  const encodedUsername = encodeURIComponent(username);
   if (!options.bypassCache) {
     const cached = profileCache.get(key);
     if (cached) return cached;
   }
 
-  const res = await fetchWithRetry(`${GITHUB_REST_URL}/users/${username}`, {
+  const res = await fetchWithRetry(`${GITHUB_REST_URL}/users/${encodedUsername}`, {
     headers: getHeaders(),
     cache: 'no-store',
     signal: options.signal,
@@ -329,13 +332,14 @@ export async function fetchUserRepos(
   options: FetchOptions = {}
 ): Promise<GitHubRepo[]> {
   const key = cacheKey('repos', username);
+  const encodedUsername = encodeURIComponent(username);
   if (!options.bypassCache) {
     const cached = reposCache.get(key);
     if (cached) return cached;
   }
 
   const firstPageRes = await fetchWithRetry(
-    `${GITHUB_REST_URL}/users/${username}/repos?per_page=100&page=1&sort=pushed`,
+    `${GITHUB_REST_URL}/users/${encodedUsername}/repos?per_page=100&page=1&sort=pushed`,
     {
       headers: getHeaders(),
       cache: 'no-store',
@@ -359,7 +363,7 @@ export async function fetchUserRepos(
     const responses = await Promise.all(
       remainingPages.map((page) =>
         fetchWithRetry(
-          `${GITHUB_REST_URL}/users/${username}/repos?per_page=100&page=${page}&sort=pushed`,
+          `${GITHUB_REST_URL}/users/${encodedUsername}/repos?per_page=100&page=${page}&sort=pushed`,
           {
             headers: getHeaders(),
             cache: 'no-store',

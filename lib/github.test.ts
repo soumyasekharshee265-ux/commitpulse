@@ -84,7 +84,9 @@ describe('fetchWithRetry', () => {
     const abortListener = addListenerSpy.mock.calls.find(([event]) => event === 'abort')?.[1];
 
     expect(abortListener).toEqual(expect.any(Function));
-    expect(addListenerSpy).toHaveBeenCalledWith('abort', abortListener, { once: true });
+    expect(addListenerSpy).toHaveBeenCalledWith('abort', abortListener, {
+      once: true,
+    });
     expect(removeListenerSpy).toHaveBeenCalledWith('abort', abortListener);
   });
 
@@ -102,7 +104,9 @@ describe('fetchWithRetry', () => {
         })
     );
 
-    const request = fetchWithRetry('https://api.github.com/test', { signal: controller.signal });
+    const request = fetchWithRetry('https://api.github.com/test', {
+      signal: controller.signal,
+    });
 
     controller.abort();
 
@@ -124,7 +128,9 @@ describe('fetchGitHubContributions', () => {
     vi.mocked(fetch).mockResolvedValue(
       mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: mockCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
         },
       })
     );
@@ -139,7 +145,9 @@ describe('fetchGitHubContributions', () => {
     vi.mocked(fetch).mockResolvedValue(
       mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: mockCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
         },
       })
     );
@@ -167,7 +175,9 @@ describe('fetchGitHubContributions', () => {
     vi.mocked(fetch).mockResolvedValue(
       mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: mockCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
         },
       })
     );
@@ -191,12 +201,17 @@ describe('fetchGitHubContributions', () => {
   });
 
   it('works correctly for a brand-new user who has zero contribution weeks', async () => {
-    const emptyCalendar: ContributionCalendar = { totalContributions: 0, weeks: [] };
+    const emptyCalendar: ContributionCalendar = {
+      totalContributions: 0,
+      weeks: [],
+    };
 
     vi.mocked(fetch).mockResolvedValue(
       mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: emptyCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: emptyCalendar },
+          },
         },
       })
     );
@@ -287,7 +302,9 @@ describe('fetchGitHubContributions', () => {
     vi.mocked(fetch).mockResolvedValue(
       mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: sparseCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: sparseCalendar },
+          },
         },
       })
     );
@@ -298,18 +315,27 @@ describe('fetchGitHubContributions', () => {
   });
 
   it('is deterministic: two calls with empty-year response return identical data', async () => {
-    const emptyCalendar: ContributionCalendar = { totalContributions: 0, weeks: [] };
+    const emptyCalendar: ContributionCalendar = {
+      totalContributions: 0,
+      weeks: [],
+    };
 
     vi.mocked(fetch).mockImplementation(async () =>
       mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: emptyCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: emptyCalendar },
+          },
         },
       })
     );
 
-    const r1 = await fetchGitHubContributions('empty-user', { bypassCache: true });
-    const r2 = await fetchGitHubContributions('empty-user', { bypassCache: true });
+    const r1 = await fetchGitHubContributions('empty-user', {
+      bypassCache: true,
+    });
+    const r2 = await fetchGitHubContributions('empty-user', {
+      bypassCache: true,
+    });
     expect(r1.totalContributions).toBe(r2.totalContributions);
     expect(r1.weeks).toEqual(r2.weeks);
   });
@@ -347,6 +373,29 @@ describe('fetchUserProfile', () => {
     expect(result.avatar_url).toBe(mockProfile.avatar_url);
   });
 
+  it('encodes the username before using it in the REST profile path', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      mockResponse({
+        login: 'octo/cat',
+        name: 'Slash User',
+        avatar_url: 'avatar.png',
+        public_repos: 1,
+        followers: 0,
+        following: 0,
+        created_at: '2024-01-01T00:00:00Z',
+        bio: null,
+        location: null,
+      })
+    );
+
+    await fetchUserProfile('octo/cat');
+
+    expect(fetch).toHaveBeenCalledWith(
+      'https://api.github.com/users/octo%2Fcat',
+      expect.objectContaining({ cache: 'no-store' })
+    );
+  });
+
   it('throws "User not found" on 404', async () => {
     vi.mocked(fetch).mockResolvedValue(mockResponse({ message: 'Not Found' }, 404));
     await expect(fetchUserProfile('ghost')).rejects.toThrow('User not found');
@@ -368,6 +417,19 @@ describe('fetchUserRepos', () => {
     );
     const result = await fetchUserRepos('octocat');
     expect(result[0].stargazers_count).toBe(1);
+  });
+
+  it('encodes the username before using it in the REST repos path', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      mockResponse([{ stargazers_count: 1, language: 'TypeScript' }])
+    );
+
+    await fetchUserRepos('octo/cat');
+
+    expect(fetch).toHaveBeenCalledWith(
+      'https://api.github.com/users/octo%2Fcat/repos?per_page=100&page=1&sort=pushed',
+      expect.objectContaining({ cache: 'no-store' })
+    );
   });
 
   it('throws status code error on failure', async () => {
@@ -492,7 +554,9 @@ describe('getFullDashboardData', () => {
       }
       return mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: mockCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
         },
       });
     });
@@ -568,7 +632,11 @@ describe('getFullDashboardData', () => {
       if (typeof url === 'string' && url.includes('/users/octocat'))
         throw new Error('Network error');
       return mockResponse({
-        data: { user: { contributionsCollection: { contributionCalendar: mockCalendar } } },
+        data: {
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
+        },
       });
     });
     await expect(getFullDashboardData('octocat')).rejects.toThrow(
@@ -593,7 +661,11 @@ describe('getFullDashboardData', () => {
         });
       }
       return mockResponse({
-        data: { user: { contributionsCollection: { contributionCalendar: mockCalendar } } },
+        data: {
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
+        },
       });
     });
 
@@ -659,7 +731,11 @@ describe('GitHub API cache behavior', () => {
   it('cache hit: second contributions call uses cached value', async () => {
     vi.mocked(fetch).mockResolvedValue(
       mockResponse({
-        data: { user: { contributionsCollection: { contributionCalendar: mockCalendar } } },
+        data: {
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
+        },
       })
     );
 
@@ -672,7 +748,11 @@ describe('GitHub API cache behavior', () => {
   it('refresh bypass: bypassCache=true forces a fresh fetch', async () => {
     vi.mocked(fetch).mockImplementation(async () =>
       mockResponse({
-        data: { user: { contributionsCollection: { contributionCalendar: mockCalendar } } },
+        data: {
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
+        },
       })
     );
 
@@ -689,7 +769,9 @@ describe('GitHub API cache behavior', () => {
     vi.mocked(fetch).mockImplementation(async () =>
       mockResponse({
         data: {
-          user: { contributionsCollection: { contributionCalendar: mockCalendar } },
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
         },
       })
     );
@@ -977,7 +1059,11 @@ describe('getOrgDashboardData', () => {
         });
       // GraphQL fetch fallback
       return mockResponse({
-        data: { user: { contributionsCollection: { contributionCalendar: mockCalendar } } },
+        data: {
+          user: {
+            contributionsCollection: { contributionCalendar: mockCalendar },
+          },
+        },
       });
     });
 
