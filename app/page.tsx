@@ -113,6 +113,10 @@ export default function LandingPage() {
           setSvgState('error');
           return;
         }
+        return res.text();
+      })
+      .then((text) => {
+        if (!text) return;
         setSvgContent(text);
         setSvgState('loaded');
         setErrorMessage(null);
