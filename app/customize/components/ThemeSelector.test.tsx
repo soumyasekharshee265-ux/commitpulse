@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeSelector } from './ThemeSelector';
 import { THEME_KEYS } from '../types';
-import userEvent from '@testing-library/user-event';
 
 describe('ThemeSelector', () => {
   const onThemeChange = vi.fn();
