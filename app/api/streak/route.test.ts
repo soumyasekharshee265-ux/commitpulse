@@ -100,6 +100,20 @@ describe('GET /api/streak', () => {
   });
 
   describe('parameter validation', () => {
+    it('falls back to default layout when an unsupported layout is provided', async () => {
+      const response = await GET(
+        makeRequest({
+          user: 'octocat',
+          layout: 'unsupported_layout',
+        })
+      );
+
+      expect(response.status).toBe(200);
+
+      const body = await response.text();
+
+      expect(body).toContain('<svg');
+    });
     it('returns 400 when the user parameter is missing', async () => {
       const response = await GET(makeRequest());
 
