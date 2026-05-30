@@ -245,6 +245,7 @@ export const streakParamsSchema = z.object({
 export const githubParamsSchema = z.object({
   username: z
     .string({ error: 'Missing "username" parameter' })
+    .trim()
     .min(1, { message: 'Username is required' })
     .max(39, { message: 'GitHub username cannot exceed 39 characters' })
     .regex(GITHUB_USERNAME_REGEX, {
