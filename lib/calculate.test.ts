@@ -608,6 +608,34 @@ describe('calculateStreak', () => {
     expect(result.longestStreak).toBe(10);
     expect(result.currentStreak).toBe(3);
   });
+
+  it('verify streak formulas for single day contribution timeline (Variation 3)', () => {
+    // Simulating 1 day of commits, preceded and followed by empty weeks.
+    // 7 empty days (1 week), 1 day of commits (1 contribution), 7 empty days (1 week)
+    const calendar = buildCalendar([
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0, // Week 1: Empty week
+      1, // 1 day of commits
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0, // Week 2: Empty week
+    ]);
+
+    const result = calculateStreak(calendar);
+
+    expect(result.currentStreak).toBe(0);
+    expect(result.longestStreak).toBe(1);
+    expect(result.totalContributions).toBe(1);
+  });
 });
 
 it('handles massive single-day commit spike timeline', () => {
