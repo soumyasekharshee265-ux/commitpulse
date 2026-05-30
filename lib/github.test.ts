@@ -1087,7 +1087,9 @@ describe('cacheKey', () => {
   });
 
   it('creates key with from and to date range', () => {
-    expect(cacheKey('contributions', 'octocat', '2024-01-01', '2024-06-30')).toBe('contributions:octocat:2024-01-01:2024-06-30');
+    expect(cacheKey('contributions', 'octocat', '2024-01-01', '2024-06-30')).toBe(
+      'contributions:octocat:2024-01-01:2024-06-30'
+    );
   });
 
   it('collision test: different to dates produce different keys', () => {
