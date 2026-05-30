@@ -647,3 +647,24 @@ describe('streakParamsSchema — view fallback behavior', () => {
     expect(parse({}).view).toBe('default');
   });
 });
+
+describe('streakParamsSchema — accent parameter HEX color validation', () => {
+  it('rejects an invalid hex color like "#ZZZZZZZ" for accent', () => {
+    // #ZZZZZZZ contains non-hex characters — must fail schema validation
+    const result = streakParamsSchema.safeParse({
+      user: 'octocat',
+      accent: '#ZZZZZZZ',
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts a valid 6-character hex color for accent', () => {
+    const result = streakParamsSchema.safeParse({
+      user: 'octocat',
+      accent: 'ff0000',
+    });
+
+    expect(result.success).toBe(true);
+  });
+});
