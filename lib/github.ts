@@ -861,12 +861,16 @@ type Language = {
   name: string;
 };
 
-export function buildInsights(streakStats: StreakStats, languages: Language[]) {
+export function buildInsights(
+  streakStats: StreakStats,
+  languages: Language[],
+  periodLabel = 'this year'
+) {
   const insights = [
     {
       id: '1',
       icon: 'Flame',
-      text: `You have a total of ${streakStats.totalContributions} contributions this year.`,
+      text: `You have a total of ${streakStats.totalContributions} contributions during ${periodLabel}.`,
     },
     {
       id: '2',
@@ -1082,7 +1086,7 @@ export async function getFullDashboardData(username: string, options: FetchOptio
     streakStats.longestStreak
   );
 
-  const insights = buildInsights(streakStats, languages);
+  const insights = buildInsights(streakStats, languages, options.rangeLabel ?? 'this year');
 
   // Building Graph Data
   const nodes: GraphNode[] = [];
