@@ -235,6 +235,8 @@ describe('GET /api/streak', () => {
       const body = await response.text();
 
       expect(body).toContain('<svg');
+      expect(body).toContain('viewBox');
+      expect(body).toContain('xmlns="http://www.w3.org/2000/svg"');
       expect(body).toContain('</svg>');
     });
 
