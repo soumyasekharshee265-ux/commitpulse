@@ -58,6 +58,22 @@ function dimensionParam(name: string, min: number, max: number) {
     .transform(toDimensionValue);
 }
 
+function isValidTimeZone(tz?: string): boolean {
+  if (!tz) return true;
+
+  try {
+    Intl.DateTimeFormat(undefined, { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const timeZoneParam = z
+  .string()
+  .optional()
+  .refine(isValidTimeZone, { message: 'Invalid timezone' });
+
 const GITHUB_USERNAME_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9]))*$/;
 
 export const streakParamsSchema = z.object({
@@ -174,6 +190,7 @@ export const streakParamsSchema = z.object({
   hide_background: z.string().optional().transform(toBooleanFlag),
   hide_stats: z.string().optional().transform(toBooleanFlag),
   lang: z.string().optional().default('en'),
+  tz: timeZoneParam,
   // Unknown view values fall back to the default dashboard view.
   view: z.enum(['default', 'monthly']).catch('default').default('default'),
   // Invalid delta formats fall back to percentage mode.
@@ -282,7 +299,7 @@ export const statsParamsSchema = z.object({
       message: 'Invalid GitHub username',
     }),
   refresh: z.string().optional().transform(toRefreshFlag),
-  tz: z.string().optional(),
+  tz: timeZoneParam,
 });
 
 export const wrappedParamsSchema = z.object({
