@@ -9,7 +9,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import ContributorsSearch from './ContributorsSearch';
 import Leaderboard from '@/components/Leaderboard';
-import CopyRepoButton from '@/app/components/CopyRepoButton';
 import { Footer } from '@/app/components/Footer';
 
 interface Contributor {
