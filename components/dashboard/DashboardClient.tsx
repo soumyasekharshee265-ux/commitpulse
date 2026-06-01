@@ -23,6 +23,7 @@ import ComparisonStatsCard from './ComparisonStatsCard';
 import RadarChart from './RadarChart';
 import GrowthTrendChart from './GrowthTrendChart';
 import ProfileOptimizerModal from './ProfileOptimizerModal';
+import ResumeProfileSection from './ResumeProfileSection';
 import type { DashboardPeriod } from '@/utils/dashboardPeriod';
 
 // Define the dashboard data structure
@@ -610,6 +611,7 @@ export default function DashboardClient({ initialData, username, period }: Dashb
               }}
             />
             <Achievements achievements={initialData.achievements} />
+            <ResumeProfileSection githubUsername={username} />
           </aside>
 
           {/* Main Content */}
