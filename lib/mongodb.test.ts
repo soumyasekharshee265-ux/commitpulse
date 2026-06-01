@@ -177,4 +177,23 @@ describe('dbConnect', () => {
     // The promise should be cleared so it can try again
     expect(global.mongoose.promise).toBeNull();
   });
+
+  it('reuses an in-flight promise when state 3 triggers concurrent dbConnect calls', async () => {
+    process.env.MONGODB_URI = 'mongodb://localhost:27017/test';
+    global.mongoose.conn = null;
+    mockMongooseConnection.readyState = 3;
+
+    const mockMongoose = { connection: 'mock' };
+    setConnectedMongoose(mockMongoose as unknown as typeof mongoose);
+
+    // Fire two concurrent calls while connection is in state 3 (disconnecting)
+    const [conn1, conn2] = await Promise.all([dbConnect(), dbConnect()]);
+
+    // Both callers must receive the same resolved value
+    expect(conn1).toBe(mockMongoose);
+    expect(conn2).toBe(mockMongoose);
+
+    // mongoose.connect must only have been called once — the second call reused the cached promise
+    expect(mongoose.connect).toHaveBeenCalledTimes(1);
+  });
 });
