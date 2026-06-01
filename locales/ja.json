@@ -5,7 +5,9 @@
     "contributors": "コントリビューター",
     "theme_toggle": "テーマを切り替える",
     "menu_open": "メニューを開く",
-    "menu_close": "メニューを閉じる"
+    "menu_close": "メニューを閉じる",
+    "compare": "比較する",
+    "customization_studio": "カスタマイズスタジオ"
   },
   "footer": {
     "tagline": "エリートビルダーコミュニティ向けに設計されています。",
@@ -138,7 +140,15 @@
       "more": "多め",
       "last_365": "過去365日",
       "tooltip_single": "{{date}} に {{count}} 件のコントリビューション",
-      "tooltip_plural": "{{date}} に {{count}} 件のコントリビューション"
+      "tooltip_plural": "{{date}} に {{count}} 件のコントリビューション",
+      "no_activity": "アクティビティの記録なし",
+      "peak_activity": "アクティビティのピーク日",
+      "high_activity": "高いアクティビティの日",
+      "steady_contribution": "安定した貢献の日",
+      "light_activity": "軽いアクティビティの日",
+      "no_active_streak": "アクティブなストリークなし",
+      "active_streak": "{{streak}}日間のアクティブストリーク",
+      "empty": "表示する最近のアクティビティはありません"
     },
     "insights": {
       "title": "AIデータ分析"

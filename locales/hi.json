@@ -5,7 +5,9 @@
     "contributors": "योगदानकर्ता",
     "theme_toggle": "थीम बदलें",
     "menu_open": "मेन्यू खोलें",
-    "menu_close": "मेन्यू बंद करें"
+    "menu_close": "मेन्यू बंद करें",
+    "compare": "तुलना करें",
+    "customization_studio": "कस्टमाइजेशन स्टूडियो"
   },
   "footer": {
     "tagline": "उत्कृष्ट डेवलपर समुदाय के लिए डिज़ाइन किया गया।",
@@ -148,7 +150,15 @@
       "more": "अधिक",
       "last_365": "पिछले 365 दिन",
       "tooltip_single": "{{date}} को {{count}} योगदान",
-      "tooltip_plural": "{{date}} को {{count}} योगदान"
+      "tooltip_plural": "{{date}} को {{count}} योगदान",
+      "no_activity": "कोई गतिविधि दर्ज नहीं",
+      "peak_activity": "अत्यधिक सक्रिय दिन",
+      "high_activity": "उच्च सक्रिय दिन",
+      "steady_contribution": "स्थिर योगदान का दिन",
+      "light_activity": "हल्की गतिविधि का दिन",
+      "no_active_streak": "कोई सक्रिय स्ट्रीक नहीं",
+      "active_streak": "{{streak}}-दिवसीय सक्रिय स्ट्रीक",
+      "empty": "दिखाने के लिए कोई हालिया गतिविधि नहीं है"
     },
     "insights": {
       "title": "एआई अंतर्दृष्टि (AI Insights)"

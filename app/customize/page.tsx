@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, Suspense, type ReactElement } from 'react';
+import { validateGitHubUsername } from '@/lib/validations';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -142,6 +143,12 @@ function CustomizeContent(): ReactElement {
       setSvgState('idle');
       return;
     }
+    if (!validateGitHubUsername(trimmedUsername)) {
+      setSvgContent('');
+      setSvgState('error');
+      setErrorMessage("That doesn't look like a valid GitHub username");
+      return;
+    }
 
     setSvgState('loading');
     const controller = new AbortController();
@@ -213,7 +220,7 @@ function CustomizeContent(): ReactElement {
       });
 
     return () => controller.abort();
-  }, [previewSrc, hasUsername]);
+  }, [previewSrc, hasUsername, trimmedUsername]);
 
   const exportSnippet = getExportSnippet(exportFormat, queryString);
 
@@ -374,6 +381,14 @@ function CustomizeContent(): ReactElement {
                           Loading preview...
                         </div>
                       )}
+                      {svgState === 'error' &&
+                        errorMessage === "That doesn't look like a valid GitHub username" && (
+                          <div className="flex flex-col items-center justify-center gap-2 text-center py-8">
+                            <p className="text-sm font-semibold text-red-500 dark:text-red-400">
+                              {errorMessage}
+                            </p>
+                          </div>
+                        )}
                       {svgState === 'error' && errorMessage === 'GitHub user not found' && (
                         <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
                           <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/10 shadow-inner">
@@ -401,16 +416,18 @@ function CustomizeContent(): ReactElement {
                           </div>
                         </div>
                       )}
-                      {svgState === 'error' && errorMessage !== 'GitHub user not found' && (
-                        <div className="flex flex-col items-center justify-center gap-2 text-center py-8">
-                          <p className="text-sm font-semibold text-red-500 dark:text-red-400">
-                            Failed to load badge
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-white/45">
-                            The API may be unavailable. Please try again.
-                          </p>
-                        </div>
-                      )}
+                      {svgState === 'error' &&
+                        errorMessage !== 'GitHub user not found' &&
+                        errorMessage !== "That doesn't look like a valid GitHub username" && (
+                          <div className="flex flex-col items-center justify-center gap-2 text-center py-8">
+                            <p className="text-sm font-semibold text-red-500 dark:text-red-400">
+                              Failed to load badge
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-white/45">
+                              The API may be unavailable. Please try again.
+                            </p>
+                          </div>
+                        )}
                       {svgState === 'loaded' && svgContent && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.95 }}
@@ -425,8 +442,8 @@ function CustomizeContent(): ReactElement {
                       )}
                     </div>
                   ) : (
-                    <div className="relative z-10 flex w-full max-w-xl flex-col items-center justify-center rounded-[1.25rem] border border-dashed border-black/15 dark:border-white/10 bg-black/[0.01] dark:bg-white/[0.02] px-6 py-12 text-center">
-                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/[0.04] text-emerald-600 dark:text-emerald-300/70">
+                    <div className="relative z-10 flex w-full max-w-xl flex-col items-center justify-center rounded-[1.25rem] border border-dashed border-black/10 bg-gray-100/80 backdrop-blur-md dark:border-white/10 dark:bg-white/3 px-6 py-12 text-center">
+                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-black/10 bg-gray-100/80 dark:border-white/10 dark:bg-white/4 text-gray-500 dark:text-emerald-300/70">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-6 w-6"

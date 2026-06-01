@@ -1,15 +1,26 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ActivityData } from '@/types/dashboard';
+import { useEffect, useRef, useState, type SyntheticEvent } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import type { ActivityData } from '@/types/dashboard';
+import { getIntensityColor } from './heatmapUtils';
+import VisualizationTooltip from './VisualizationTooltip';
 import { useTranslation } from '@/context/TranslationContext';
+import {
+  formatTooltipDate,
+  getActivityInsight,
+  getLocalActiveStreak,
+  getStreakLabel,
+} from './tooltipUtils';
 
 const CELL = 14;
 const GAP = 3;
 
 interface TooltipState {
-  text: string;
+  count: number;
+  date: string;
+  insight: string;
+  streak: string;
   x: number;
   y: number;
 }
@@ -21,12 +32,7 @@ interface HeatmapProps {
   emptyMessage?: string;
 }
 
-export default function Heatmap({
-  data,
-  title = 'Contribution Heatmap',
-  subtitle = 'Last 365 days',
-  emptyMessage = 'No recent activity to display',
-}: HeatmapProps) {
+export default function Heatmap({ data, title, subtitle, emptyMessage }: HeatmapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
@@ -44,44 +50,39 @@ export default function Heatmap({
   // Recalculate scale whenever the card resizes
   useEffect(() => {
     if (!containerRef.current) return;
+
     const observer = new ResizeObserver(([entry]) => {
       const available = entry.contentRect.width;
       if (available > 0) setScale(Math.min(1, available / naturalWidth));
     });
+
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, [naturalWidth]);
 
-  const getIntensityColor = (intensity: number) => {
-    switch (intensity) {
-      case 0:
-        return 'bg-zinc-100 dark:bg-zinc-900';
-      case 1:
-        return 'bg-zinc-200 dark:bg-zinc-800';
-      case 2:
-        return 'bg-zinc-400 dark:bg-zinc-600';
-      case 3:
-        return 'bg-zinc-650 dark:bg-zinc-400';
-      case 4:
-        return 'bg-zinc-900 dark:bg-white';
-      default:
-        return 'bg-zinc-100 dark:bg-zinc-900';
-    }
-  };
-
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>, day: ActivityData) => {
+  const handleMouseEnter = (
+    e: SyntheticEvent<HTMLDivElement>,
+    day: ActivityData,
+    index: number
+  ) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const tooltipKey =
-      day.count === 1 ? 'dashboard.heatmap.tooltip_single' : 'dashboard.heatmap.tooltip_plural';
+    const streak = getLocalActiveStreak(data, index);
+
     setTooltip({
-      text: t(tooltipKey, { count: day.count.toString(), date: day.date }),
-      // Centre the tooltip above the cell
+      count: day.count,
+      date: formatTooltipDate(day.date),
+      insight: getActivityInsight(day.count, day.intensity, t),
+      streak: getStreakLabel(streak, t),
       x: rect.left + rect.width / 2,
-      y: rect.top - 8,
+      y: rect.top - 10,
     });
   };
 
   const handleMouseLeave = () => setTooltip(null);
+
+  const displayTitle = title || t('dashboard.heatmap.title');
+  const displaySubtitle = subtitle || t('dashboard.heatmap.last_365');
+  const displayEmptyMessage = emptyMessage || t('dashboard.heatmap.empty');
 
   return (
     <>
@@ -90,25 +91,25 @@ export default function Heatmap({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="p-6 rounded-xl bg-white dark:bg-[#0a0a0a] border border-black/10 dark:border-[rgba(255,255,255,0.08)] shadow-sm"
+        className="rounded-xl border border-black/10 bg-white p-6 dark:border-[rgba(255,255,255,0.08)] dark:bg-[#0a0a0a]"
       >
         {/* Header */}
         <h3 className="my-1 text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
-          {title || t('dashboard.heatmap.title')}
+          {displayTitle}
         </h3>
-        <div className="flex justify-between items-end mb-4">
+
+        <div className="mb-4 flex items-end justify-between">
           <div>
-            <p className="mt-0.5 text-xs text-[#A1A1AA]">
-              {subtitle || t('dashboard.heatmap.last_365')}
-            </p>
+            <p className="mt-0.5 text-xs text-[#A1A1AA]">{displaySubtitle}</p>
           </div>
-          <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-[#A1A1AA]">
+
+          <div className="flex items-center gap-2 text-xs text-[#A1A1AA]">
             <span>{t('dashboard.heatmap.less')}</span>
             <div className="flex gap-1">
               {[0, 1, 2, 3, 4].map((level) => (
                 <div
                   key={level}
-                  className={` h-2 w-2 xs:w-3 xs:h-3 rounded-sm ${getIntensityColor(level)}`}
+                  className={`h-2 w-2 rounded-sm xs:h-3 xs:w-3 ${getIntensityColor(level)}`}
                 />
               ))}
             </div>
@@ -127,18 +128,34 @@ export default function Heatmap({
                 height: (7 * (CELL + GAP) - GAP) * scale,
               }}
             >
-              <div className="flex " style={{ gap: GAP }}>
+              <div className="flex" role="grid" style={{ gap: GAP }}>
                 {weeks.map((week, wIndex) => (
-                  <div key={wIndex} className="flex flex-col" style={{ gap: GAP }}>
-                    {week.map((day, dIndex) => (
-                      <div
-                        key={dIndex}
-                        onMouseEnter={(e) => handleMouseEnter(e, day)}
-                        onMouseLeave={handleMouseLeave}
-                        className={`rounded-sm cursor-pointer transition-all duration-150 hover:brightness-125 hover:scale-125 ${getIntensityColor(day.intensity)}`}
-                        style={{ width: CELL, height: CELL }}
-                      />
-                    ))}
+                  <div key={wIndex} className="flex flex-col" role="row" style={{ gap: GAP }}>
+                    {week.map((day, dIndex) => {
+                      const originalIndex = wIndex * 7 + dIndex;
+
+                      return (
+                        <div
+                          key={day.date}
+                          role="gridcell"
+                          aria-label={t(
+                            day.count === 1
+                              ? 'dashboard.heatmap.tooltip_single'
+                              : 'dashboard.heatmap.tooltip_plural',
+                            { count: day.count.toString(), date: formatTooltipDate(day.date) }
+                          )}
+                          tabIndex={0}
+                          onMouseEnter={(e) => handleMouseEnter(e, day, originalIndex)}
+                          onFocus={(e) => handleMouseEnter(e, day, originalIndex)}
+                          onMouseLeave={handleMouseLeave}
+                          onBlur={handleMouseLeave}
+                          className={`cursor-pointer rounded-sm transition-all duration-150 hover:scale-125 hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-white/70 dark:focus:ring-white ${getIntensityColor(
+                            day.intensity
+                          )}`}
+                          style={{ width: CELL, height: CELL }}
+                        />
+                      );
+                    })}
                   </div>
                 ))}
               </div>
@@ -146,7 +163,7 @@ export default function Heatmap({
           </div>
         ) : (
           <div className="flex h-[120px] items-center justify-center rounded-lg border border-dashed border-black/10 text-sm text-[#A1A1AA] dark:border-[rgba(255,255,255,0.08)]">
-            {emptyMessage}
+            {displayEmptyMessage}
           </div>
         )}
       </motion.div>
@@ -154,21 +171,19 @@ export default function Heatmap({
       {/* Tooltip rendered at viewport level — unaffected by scale/overflow */}
       <AnimatePresence>
         {tooltip && (
-          <motion.div
-            key="heatmap-tooltip"
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            transition={{ duration: 0.12 }}
-            className="fixed z-[9999] pointer-events-none -translate-x-1/2 -translate-y-full"
-            style={{ left: tooltip.x, top: tooltip.y }}
+          <VisualizationTooltip
+            title={t(
+              tooltip.count === 1
+                ? 'dashboard.heatmap.tooltip_single'
+                : 'dashboard.heatmap.tooltip_plural',
+              { count: tooltip.count.toString(), date: tooltip.date }
+            )}
+            x={tooltip.x}
+            y={tooltip.y}
           >
-            <div className="bg-zinc-950 border border-white/10 px-2.5 py-1.5 rounded-md text-[11px] text-white shadow-lg whitespace-nowrap">
-              {tooltip.text}
-            </div>
-            {/* Arrow */}
-            <div className="mx-auto w-2 h-2 bg-zinc-950 border-r border-b border-white/10 rotate-45 -mt-1" />
-          </motion.div>
+            <div>{tooltip.insight}</div>
+            <div>{tooltip.streak}</div>
+          </VisualizationTooltip>
         )}
       </AnimatePresence>
     </>

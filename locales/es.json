@@ -5,7 +5,9 @@
     "contributors": "Colaboradores",
     "theme_toggle": "Cambiar tema",
     "menu_open": "Abrir menú",
-    "menu_close": "Cerrar menú"
+    "menu_close": "Cerrar menú",
+    "compare": "Comparar",
+    "customization_studio": "Estudio de Personalización"
   },
   "footer": {
     "tagline": "Diseñado para la comunidad de desarrolladores de élite.",
@@ -152,7 +154,15 @@
       "more": "Más",
       "last_365": "Últimos 365 días",
       "tooltip_single": "{{count}} contribución el {{date}}",
-      "tooltip_plural": "{{count}} contribuciones el {{date}}"
+      "tooltip_plural": "{{count}} contribuciones el {{date}}",
+      "no_activity": "Sin actividad registrada",
+      "peak_activity": "Día de actividad máxima",
+      "high_activity": "Día de alta actividad",
+      "steady_contribution": "Día de contribución constante",
+      "light_activity": "Día de actividad ligera",
+      "no_active_streak": "Sin racha activa",
+      "active_streak": "Racha activa de {{streak}} días",
+      "empty": "Sin actividad reciente para mostrar"
     },
     "insights": {
       "title": "Ideas de IA"

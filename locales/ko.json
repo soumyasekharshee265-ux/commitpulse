@@ -5,7 +5,9 @@
     "contributors": "기여자",
     "theme_toggle": "테마 전환",
     "menu_open": "메뉴 열기",
-    "menu_close": "메뉴 닫기"
+    "menu_close": "메뉴 닫기",
+    "compare": "비교하기",
+    "customization_studio": "커스터마이징 스튜디오"
   },
   "footer": {
     "tagline": "엘리트 빌더 커뮤니티를 위해 설계되었습니다.",
@@ -138,7 +140,15 @@
       "more": "많음",
       "last_365": "지난 365일",
       "tooltip_single": "{{date}}에 {{count}}회 기여",
-      "tooltip_plural": "{{date}}에 {{count}}회 기여"
+      "tooltip_plural": "{{date}}에 {{count}}회 기여",
+      "no_activity": "기록된 활동 없음",
+      "peak_activity": "최대 활동일",
+      "high_activity": "높은 활동일",
+      "steady_contribution": "꾸준한 기여일",
+      "light_activity": "가벼운 활동일",
+      "no_active_streak": "활성 스트릭 없음",
+      "active_streak": "{{streak}}일 연속 활성 스트릭",
+      "empty": "표시할 최근 활동이 없습니다"
     },
     "insights": {
       "title": "AI 분석 통찰"

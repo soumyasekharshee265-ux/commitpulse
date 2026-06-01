@@ -59,7 +59,7 @@ export default function StatsCard({
 
           {showUTCDisclaimer && (
             <div className="mt-3 space-y-1">
-              <p className="text-[11px] text-zinc-400 dark:text-[#71717A] leading-relaxed">
+              <p className="text-[11px] text-[#71717A] leading-relaxed">
                 ℹ {t('dashboard.stats.utc_disclaimer')}
               </p>
 

@@ -5,7 +5,9 @@
     "contributors": "Contributeurs",
     "theme_toggle": "Changer de thème",
     "menu_open": "Ouvrir le menu",
-    "menu_close": "Fermer le menu"
+    "menu_close": "Fermer le menu",
+    "compare": "Comparer",
+    "customization_studio": "Studio de Personnalisation"
   },
   "footer": {
     "tagline": "Conçu pour la communauté des développeurs d'élite.",
@@ -138,7 +140,15 @@
       "more": "Plus",
       "last_365": "365 derniers jours",
       "tooltip_single": "{{count}} contribution le {{date}}",
-      "tooltip_plural": "{{count}} contributions le {{date}}"
+      "tooltip_plural": "{{count}} contributions le {{date}}",
+      "no_activity": "Aucune activité enregistrée",
+      "peak_activity": "Journée d'activité maximale",
+      "high_activity": "Journée de haute activité",
+      "steady_contribution": "Journée de contribution régulière",
+      "light_activity": "Journée d'activité légère",
+      "no_active_streak": "Aucune série active",
+      "active_streak": "Série active de {{streak}} jours",
+      "empty": "Aucune activité récente à afficher"
     },
     "insights": {
       "title": "Analyses de l'IA"

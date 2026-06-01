@@ -5,7 +5,9 @@
     "contributors": "贡献者",
     "theme_toggle": "切换主题",
     "menu_open": "打开菜单",
-    "menu_close": "关闭菜单"
+    "menu_close": "关闭菜单",
+    "compare": "对比",
+    "customization_studio": "自定义工作室"
   },
   "footer": {
     "tagline": "专为精英开发者社区设计。",
@@ -138,7 +140,15 @@
       "more": "较多",
       "last_365": "过去 365 天",
       "tooltip_single": "在 {{date}} 进行了 {{count}} 次贡献",
-      "tooltip_plural": "在 {{date}} 进行了 {{count}} 次贡献"
+      "tooltip_plural": "在 {{date}} 进行了 {{count}} 次贡献",
+      "no_activity": "无活动记录",
+      "peak_activity": "巅峰活动日",
+      "high_activity": "高活动日",
+      "steady_contribution": "稳定贡献日",
+      "light_activity": "轻度活动日",
+      "no_active_streak": "无活跃连续记录",
+      "active_streak": "连续 {{streak}} 天活跃记录",
+      "empty": "没有最近的活动可以显示"
     },
     "insights": {
       "title": "AI 数据洞察"
