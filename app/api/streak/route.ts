@@ -183,15 +183,16 @@ export async function GET(request: Request) {
         to,
       });
       calendar = userData.calendar;
+    }
 
-      if (versus) {
-        const versusData = await fetchGitHubContributions(versus, {
-          bypassCache: refresh,
-          from,
-          to,
-        });
-        versusCalendar = versusData.calendar;
-      }
+    // Fetch versus calendar independently — works with both user and org modes
+    if (versus) {
+      const versusData = await fetchGitHubContributions(versus, {
+        bypassCache: refresh,
+        from,
+        to,
+      });
+      versusCalendar = versusData.calendar;
     }
 
     let svg = '';
