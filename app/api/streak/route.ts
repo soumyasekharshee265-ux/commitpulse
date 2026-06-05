@@ -107,8 +107,17 @@ export async function GET(request: Request) {
 
     let timezone = 'UTC';
     if (tzParam) {
-      timezone = new Intl.DateTimeFormat(undefined, { timeZone: tzParam }).resolvedOptions()
-        .timeZone;
+      try {
+        timezone = new Intl.DateTimeFormat(undefined, { timeZone: tzParam }).resolvedOptions()
+          .timeZone;
+      } catch (error) {
+        if (error instanceof RangeError) {
+          const validationErr = new Error(`Invalid timezone: ${tzParam}`);
+          validationErr.name = 'ValidationError';
+          throw validationErr;
+        }
+        throw error;
+      }
     }
 
     let from = customFrom
