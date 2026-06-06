@@ -89,7 +89,6 @@ export function CommitPulseSection({
 
   useEffect(() => {
     if (!debouncedUsername) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUserDetails(null);
       setFetchError(null);
       setLoading(false);
