@@ -67,7 +67,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (!mounted) return;
-    
+
     if (debouncedUsername.length === 0) {
       setUserDetails(null);
       setUserDetailsError(null);
@@ -99,7 +99,7 @@ export default function LandingPage() {
           throw new Error(errData.error || 'Failed to fetch user');
         }
         const data = await response.json();
-        
+
         if (isCurrentFetch) {
           setUserDetails(data);
         }
