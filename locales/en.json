@@ -83,7 +83,8 @@
     "copied_snippet_label": "Your copied snippet",
     "color_tip": "Tip: Add ?accent=808080 to the URL to change your monolith's colour palette.",
     "watch_dashboard_btn": "Watch Your Dashboard",
-    "customize_more_btn": "Want to customize more?"
+    "customize_more_btn": "Want to customize more?",
+    "dismiss_aria": "Dismiss guide"
   },
   "customize_cta": {
     "studio_badge": "Customization Studio",
