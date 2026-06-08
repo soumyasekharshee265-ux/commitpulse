@@ -6,23 +6,34 @@ import BrandParticles from './BrandParticles';
 
 let mockReducedMotion = false;
 
+const mockMotion = {
+  div: React.forwardRef<
+    HTMLDivElement,
+    React.HTMLAttributes<HTMLDivElement> & {
+      animate?: unknown;
+      transition?: unknown;
+    }
+  >(({ animate, transition, style, ...props }, ref) => (
+    <div
+      ref={ref}
+      {...props}
+      style={style}
+      data-testid="motion-div"
+      data-animate={JSON.stringify(animate)}
+      data-transition={JSON.stringify(transition)}
+    />
+  )),
+};
+
 // Completely type-safe framer-motion mock block
 vi.mock('framer-motion', () => ({
-  motion: {
-    div: React.forwardRef<HTMLDivElement, any>(({ animate, transition, style, ...props }, ref) => (
-      <div
-        ref={ref}
-        {...props}
-        style={style}
-        data-testid="motion-div"
-        data-animate={JSON.stringify(animate)}
-        data-transition={JSON.stringify(transition)}
-      />
-    )),
-  },
+  motion: mockMotion,
   useReducedMotion: () => mockReducedMotion,
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
+
+// Add display name
+(mockMotion.div as any).displayName = 'MotionDiv';
 
 describe('BrandParticles Component', () => {
   beforeEach(() => {

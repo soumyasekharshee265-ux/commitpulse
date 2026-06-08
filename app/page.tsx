@@ -1,10 +1,11 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { useRef, useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
 
-import { Flame, Trophy, GitCommit, Folder, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -14,43 +15,10 @@ import { DiscordButton } from '@/components/DiscordButton';
 import { WallOfLove } from '@/components/WallOfLove';
 import { validateGitHubUsername } from '@/lib/validations';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://commitpulse.vercel.app'),
-  title: 'CommitPulse | 3D Isometric GitHub Contribution Graph',
-  description:
-    'Transform your GitHub contribution history into a cinematic, 3D isometric SVG monolith. Drop it into your README and visualize your developer rhythm with real-time accuracy.',
-  keywords: [
-    'GitHub',
-    'contribution graph',
-    'isometric',
-    '3D SVG',
-    'GitHub stats',
-    'README widget',
-    'developer portfolio',
-    'CommitPulse',
-    'streak badge',
-    'GitHub badge generator',
-  ],
-  openGraph: {
-    title: 'CommitPulse | 3D Isometric GitHub Contribution Graph',
-    description:
-      'Generate a cinematic, isometric 3D SVG of your GitHub contributions for your README. Visualize your grind.',
-    url: 'https://commitpulse.vercel.app/',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'CommitPulse | Elevate Your GitHub README',
-    description:
-      'Generate a cinematic, isometric 3D SVG of your GitHub contributions for your README.',
-  },
-};
-
 export default function LandingPage() {
   const [username, setUsername] = useLocalStorage('commitpulse:last-user', '');
   const [instantUsername, setInstantUsername] = useState('');
 
-  const guideRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -66,8 +34,10 @@ export default function LandingPage() {
   const [userDetailsLoading, setUserDetailsLoading] = useState(false);
   const [userDetailsError, setUserDetailsError] = useState<string | null>(null);
 
+  // Safe Asynchronous React State Protection Pattern
   useEffect(() => {
     setMounted(true);
+    return () => setMounted(false);
   }, []);
 
   useGSAP(
@@ -95,10 +65,9 @@ export default function LandingPage() {
   const trimmedUsername = username.trim();
   const debouncedUsername = useDebounce(trimmedUsername, 500);
 
-  const previewUsername = instantUsername || debouncedUsername;
-
   useEffect(() => {
     if (!mounted) return;
+    
     if (debouncedUsername.length === 0) {
       setUserDetails(null);
       setUserDetailsError(null);
@@ -112,6 +81,8 @@ export default function LandingPage() {
       setUserDetailsLoading(false);
       return;
     }
+
+    let isCurrentFetch = true;
 
     const fetchDetails = async () => {
       setUserDetailsLoading(true);
@@ -128,17 +99,28 @@ export default function LandingPage() {
           throw new Error(errData.error || 'Failed to fetch user');
         }
         const data = await response.json();
-        setUserDetails(data);
+        
+        if (isCurrentFetch) {
+          setUserDetails(data);
+        }
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to fetch user';
-        setUserDetails(null);
-        setUserDetailsError(message);
+        if (isCurrentFetch) {
+          const message = err instanceof Error ? err.message : 'Failed to fetch user';
+          setUserDetails(null);
+          setUserDetailsError(message);
+        }
       } finally {
-        setUserDetailsLoading(false);
+        if (isCurrentFetch) {
+          setUserDetailsLoading(false);
+        }
       }
     };
 
     fetchDetails();
+
+    return () => {
+      isCurrentFetch = false;
+    };
   }, [debouncedUsername, mounted]);
 
   const handleGenerate = (e: React.FormEvent) => {
