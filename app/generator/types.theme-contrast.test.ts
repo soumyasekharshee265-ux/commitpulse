@@ -17,6 +17,9 @@ describe('GeneratorTypes theme contrast behavior', () => {
       githubUsername: 'user',
       showCommitPulse: true,
       commitPulseAccent: '#f8fafc',
+      showSnakeGraph: true,
+      showPacmanGraph: true,
+      graphPlacement: 'bottom',
     };
 
     const darkState: GeneratorState = {
@@ -28,6 +31,9 @@ describe('GeneratorTypes theme contrast behavior', () => {
       githubUsername: 'user',
       showCommitPulse: true,
       commitPulseAccent: '#0f172a',
+      showSnakeGraph: true,
+      showPacmanGraph: true,
+      graphPlacement: 'bottom',
     };
 
     expect(lightState.commitPulseAccent).toBe('#f8fafc');
@@ -83,6 +89,9 @@ describe('GeneratorTypes theme contrast behavior', () => {
       githubUsername: 'user',
       showCommitPulse: true,
       commitPulseAccent: '#f8fafc',
+      showSnakeGraph: true,
+      showPacmanGraph: true,
+      graphPlacement: 'bottom',
     };
 
     const stateDisabled: GeneratorState = {
@@ -94,6 +103,9 @@ describe('GeneratorTypes theme contrast behavior', () => {
       githubUsername: 'user',
       showCommitPulse: false,
       commitPulseAccent: '#0f172a',
+      showSnakeGraph: true,
+      showPacmanGraph: true,
+      graphPlacement: 'bottom',
     };
 
     expect(stateEnabled.showCommitPulse).toBe(true);
