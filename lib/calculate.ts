@@ -84,7 +84,6 @@ export function getLocalTodayStr(now: Date, timezone: string): string {
     return now.toISOString().split('T')[0];
   }
 }
-
 export function isStreakAlive(
   today: { contributionCount: number },
   yesterday: { contributionCount: number } | null

@@ -639,6 +639,7 @@ export const wrappedParamsSchema = z.object({
   hide_background: z.string().optional().transform(toBooleanFlag), // ✅ Fixed: was toRefreshFlag
   width: dimensionParam('width', 100, 1200),
   height: dimensionParam('height', 80, 800),
+  tz: timeZoneParam,
 });
 
 export const notifyPostSchema = z.object({
